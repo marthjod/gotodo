@@ -11,11 +11,18 @@ Minimal webapp for displaying and editing [todo.txt](http://todotxt.com/) files.
 
 ## Client
 
-- TODO: Fetch and display todo.txt JSON data in intervals.
+- Fetch and display todo.txt JSON data.
+- TODO: Re-fetch in intervals.
 - TODO: Allow in-browser editing and saving, i.e. sending JSON back to the server.
 
-## Building
+## Building and running
 
 ```
 go build -o gotodo main.go
+
+Usage of ./gotodo:
+  -port=4242: Local port to listen on
+  -todofile="todo.txt": todo.txt file to use
 ```
+
+- NB: Server will also serve static files relative to executable's dir (for _index.html_ and _js/*.js_).
