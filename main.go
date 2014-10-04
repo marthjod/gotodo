@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -144,11 +145,31 @@ func main() {
 		err          error
 		port         int
 		todoFilename string
+		contentDir   string
+		path         string
+		dir          os.FileInfo
 	)
 
 	flag.IntVar(&port, "port", 4242, "Local port to listen on")
 	flag.StringVar(&todoFilename, "todofile", "todo.txt", "todo.txt file to use")
 	flag.Parse()
+
+	contentDir, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+
+	if path, err = filepath.Abs(contentDir); err != nil {
+		fmt.Printf("%v\n", err)
+		os.Exit(3)
+	}
+
+	if dir, err = os.Stat(path); err != nil {
+		fmt.Printf("%v\n", err)
+		os.Exit(3)
+	}
+
+	if !dir.IsDir() {
+		fmt.Printf("Not a directory: %v\n", dir.Name())
+		os.Exit(3)
+	}
 
 	http.HandleFunc("/todo", func(w http.ResponseWriter, r *http.Request) {
 
@@ -173,6 +194,9 @@ func main() {
 			log.Printf("Returned todo.txt JSON containing %d entries", len(todo.Entries))
 		}
 	})
+
+	// other files served statically
+	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(contentDir))))
 
 	log.Printf("Serving on port %v\n", port)
 	err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
