@@ -171,6 +171,10 @@ func main() {
 		os.Exit(3)
 	}
 
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
+
 	http.HandleFunc("/todo", func(w http.ResponseWriter, r *http.Request) {
 
 		var (
@@ -195,8 +199,9 @@ func main() {
 		}
 	})
 
-	// other files served statically
-	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(contentDir))))
+	http.HandleFunc("/js/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, r.URL.Path[1:])
+	})
 
 	log.Printf("Serving on port %v\n", port)
 	err = http.ListenAndServe(":"+strconv.Itoa(port), nil)
