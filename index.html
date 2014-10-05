@@ -9,7 +9,9 @@
 		<script type="text/javascript" src="js/get.js"></script>
 		<script>
 			$( document ).ready(function() {
-				getTodos();
+				getTodos(function (entries) {
+					displayTodos(sortTodosBy("Priority", entries));
+				});
 			});
 		</script>
 		<title>gotodo</title>

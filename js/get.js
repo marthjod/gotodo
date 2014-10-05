@@ -1,11 +1,54 @@
-var getTodos = function () {
+var getTodos = function (callback) {
 	"use strict;"
 
-	// expects array of entries
+	// expects array of entries at URL path /todo
 	$.getJSON("todo", function(entries) {
-		var todosDiv = $("#todos");
-		var panel, panelHeading, panelFooter = null;
-		var heading = "", footer = "";
+		if (callback && typeof callback === "function") {
+			callback(entries);
+		}
+	});
+};
+
+var sortTodosBy = function (sortBy, entries) {
+	"use strict;"
+
+	if (!sortBy || typeof sortBy !== "string") {
+		return [];
+	}
+	if (!entries || typeof entries !== "object" || !entries.hasOwnProperty("length")) {
+		return [];
+	}
+
+	entries.sort(function(a, b) {
+		if (sortBy === "Priority") {
+			if (a.Priority !== "" && b.Priority !== "") {
+				if (a.Priority < b.Priority) {
+					return -1;
+				} else if (a.Priority > b.Priority) {
+					return 1;
+				} else {
+					return 0;
+				}
+			} else if (a.Priority !== "") {
+				return -1;
+			} else if (b.Priority !== "") {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+	});
+
+	return entries;
+};
+
+var displayTodos = function (entries) {
+	"use strict;"
+
+	if (entries && entries !== null) {
+		var todosDiv = $("#todos"),
+			panel, panelHeading, panelFooter = null,
+			heading = "", footer = "";
 
 		$.each(entries, function (index, element) {
 			heading = "";
@@ -42,13 +85,14 @@ var getTodos = function () {
 
 			$("<h3>").attr("class", "panel-title").html(heading).appendTo(panelHeading);
 			panelHeading.appendTo(panel);
-			panelFooter.html(footer).appendTo(panel);
 
 			if (element.hasOwnProperty("Description")) {
 				$("<div>").attr("class", "panel-body").html(element.Description).appendTo(panel);
 			}
 
+			panelFooter.html(footer).appendTo(panel);
+
 			panel.appendTo(todosDiv);
 		})
-	});
+	}
 };
