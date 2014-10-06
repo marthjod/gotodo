@@ -77,7 +77,7 @@ func convert(todoFile string) (TodoTxt, error) {
 		i          int
 	)
 
-	projectsRE = regexp.MustCompile(`\+\w+`)
+	projectsRE = regexp.MustCompile(`\+[\w/]+`)
 	contextsRE = regexp.MustCompile(`@\w+`)
 	priorityRE = regexp.MustCompile(`\([A-Z]\)`)
 
