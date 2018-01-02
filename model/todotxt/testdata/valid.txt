@@ -1,0 +1,6 @@
+minimal entry
+I have a project +foo
+I have a context @work
+(A) I have a prio
+(B) I have a project, context, and prio +foo @work
+x (B) I am a finished task +foo @work
