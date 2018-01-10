@@ -3,12 +3,10 @@ language: go
 before_install:
   - go get -u
   - go get -u github.com/golang/lint/golint
-  - go get -u github.com/kisielk/errcheck
   - go get -u honnef.co/go/tools/cmd/megacheck
 
 script:
   - make vet
   - make lint
-  - make errcheck
   - make megacheck
   - make test
