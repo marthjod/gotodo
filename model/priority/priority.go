@@ -64,7 +64,7 @@ var priorities = map[string]Priority{
 	"(Z)": Z,
 }
 
-// GetPriority maps an input string to its corresponding Priority
+// GetPriority maps input string(s) to their corresponding Priority/ies
 func GetPriority(s string) Priority {
 	for k, v := range priorities {
 		if s == k {

@@ -26,7 +26,7 @@ type Entry struct {
 	Done        bool              `json:"done"`
 }
 
-// Read ... func Read(line string, includingDone bool) Entry {
+// Read converts a string into an Entry
 func Read(line string) Entry {
 	var (
 		e        = Entry{}
