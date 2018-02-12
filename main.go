@@ -10,6 +10,7 @@ import (
 
 	"github.com/marthjod/gotodo/model/entry"
 	"github.com/marthjod/gotodo/model/todotxt"
+	"github.com/marthjod/gotodo/provider"
 )
 
 // read in todo.txt file and convert to Go struct
@@ -63,6 +64,14 @@ func main() {
 
 	flag.StringVar(&todoFilename, "t", "todo.txt", "todo.txt file to use")
 	flag.Parse()
+
+	dropbox := provider.Dropbox{}
+	err = dropbox.Authorize()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dropbox.ListFiles()
 
 	if todo, err = convert(todoFilename); err != nil {
 		log.Fatal(err)
