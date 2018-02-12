@@ -73,6 +73,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%s", js)
+	fmt.Printf("%s\n", js)
 
 }
