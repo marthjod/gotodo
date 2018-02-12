@@ -7,6 +7,9 @@ import (
 // Project represents a todo.txt project
 type Project string
 
+// MatchRegexp defines the regular expression matching project strings
+const MatchRegexp = `\+[\w/]+`
+
 // GetProjects maps input string(s) to their corresponding Project(s)
 func GetProjects(s ...string) []Project {
 	var ret = []Project{}

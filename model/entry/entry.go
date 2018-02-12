@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	projectsRE   = regexp.MustCompile(`\+[\w/]+`)
-	contextsRE   = regexp.MustCompile(`@\w+`)
-	priorityRE   = regexp.MustCompile(`\([A-Z]\)`)
+	projectsRE   = regexp.MustCompile(project.MatchRegexp)
+	contextsRE   = regexp.MustCompile(context.MatchRegexp)
+	priorityRE   = regexp.MustCompile(priority.MatchRegexp)
 	whitespaceRE = regexp.MustCompile("  +")
 )
 

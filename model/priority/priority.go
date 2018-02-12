@@ -3,6 +3,9 @@ package priority
 // Priority represents a todo.txt priority (A-Z)
 type Priority int
 
+// MatchRegexp defines the regular expression matching priority strings
+const MatchRegexp = `\([A-Z]\)`
+
 //go:generate stringer -type=Priority
 const (
 	None Priority = iota
