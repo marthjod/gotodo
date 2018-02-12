@@ -8,7 +8,7 @@ import (
 type Context string
 
 // MatchRegexp defines the regular expression matching context strings
-const MatchRegexp = `@\w+`
+const MatchRegexp = `@\pL+`
 
 // GetContexts maps input string(s) to their corresponding Context(s)
 func GetContexts(s ...string) []Context {

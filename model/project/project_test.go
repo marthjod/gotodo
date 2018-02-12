@@ -25,6 +25,10 @@ var expected = []struct {
 		projectStr: []string{"+Foo", "+Bar"},
 		projects:   []Project{"Foo", "Bar"},
 	},
+	{
+		projectStr: []string{"+Aldrei_for_ég_suður"},
+		projects:   []Project{"Aldrei_for_ég_suður"},
+	},
 }
 
 func TestGetProjects(t *testing.T) {

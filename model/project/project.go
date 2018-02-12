@@ -8,7 +8,7 @@ import (
 type Project string
 
 // MatchRegexp defines the regular expression matching project strings
-const MatchRegexp = `\+[\w/]+`
+const MatchRegexp = `\+[\pL/]+`
 
 // GetProjects maps input string(s) to their corresponding Project(s)
 func GetProjects(s ...string) []Project {

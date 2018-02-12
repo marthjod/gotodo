@@ -25,6 +25,10 @@ var expected = []struct {
 		contextStr: []string{"@Foo", "@Bar"},
 		contexts:   []Context{"Foo", "Bar"},
 	},
+	{
+		contextStr: []string{"@Ísafjörður"},
+		contexts:   []Context{"Ísafjörður"},
+	},
 }
 
 func TestGetContexts(t *testing.T) {
