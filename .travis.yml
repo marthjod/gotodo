@@ -1,7 +1,7 @@
 language: go
 
 before_install:
-  - go get -u
+  - go get -u github.com/marthjod/gotodo/...
   - go get -u github.com/golang/lint/golint
   - go get -u honnef.co/go/tools/cmd/megacheck
 
