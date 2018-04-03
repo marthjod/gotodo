@@ -11,12 +11,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// TODO os.Getenv()
-const (
-	appKey        = "appkey"
-	appSecret     = "appsecret"
-	antiCSRFState = "no-csrf"
-)
+const antiCSRFState = "no-csrf"
 
 // Dropbox represents a Dropbox API client
 type Dropbox struct {
@@ -26,7 +21,7 @@ type Dropbox struct {
 }
 
 // NewDropbox returns configured Dropbox
-func NewDropbox() *Dropbox {
+func NewDropbox(appKey, appSecret string) *Dropbox {
 	return &Dropbox{
 		OAuth2Conf: &oauth2.Config{
 			ClientID:     appKey,
