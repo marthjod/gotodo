@@ -1,7 +1,6 @@
 package provider
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -65,28 +64,22 @@ func (d *Dropbox) SetToken(accessToken string) {
 	d.Client = d.OAuth2Conf.Client(context.Background(), tok)
 }
 
-// ListFolder is an example API call function (WIP)
-func (d *Dropbox) ListFolder(folder string) error {
-	var body = []byte(fmt.Sprintf(`{
-		"path": "%s",
-		"recursive": true,
-		"include_media_info": false,
-		"include_deleted": false,
-		"include_has_explicit_shared_members": false,
-		"include_mounted_folders": false
-}`, folder))
+// Download returns the content found at path.
+func (d *Dropbox) Download(path string) ([]byte, error) {
+	var content = []byte{}
 
-	res, err := d.Client.Post("https://api.dropboxapi.com/2/files/list_folder", "application/json", bytes.NewBuffer(body))
-
+	req, err := http.NewRequest("POST", "https://content.dropboxapi.com/2/files/download", nil)
 	if err != nil {
-		return err
+		return content, err
 	}
 
-	b, err := ioutil.ReadAll(res.Body)
+	req.Header.Add("Dropbox-API-Arg", fmt.Sprintf(`{"path": "%s"}`, path))
+
+	res, err := d.Client.Do(req)
+
 	if err != nil {
-		return err
+		return content, err
 	}
 
-	fmt.Printf("%s\n", b)
-	return nil
+	return ioutil.ReadAll(res.Body)
 }
