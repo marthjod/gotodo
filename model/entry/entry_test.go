@@ -2,6 +2,7 @@ package entry
 
 import (
 	"reflect"
+	"sort"
 	"testing"
 
 	"github.com/marthjod/gotodo/model/context"
@@ -90,4 +91,35 @@ func TestRead(t *testing.T) {
 			t.Errorf("Expected %+v, got %+v", exp.entry, out)
 		}
 	}
+}
+
+func TestSortByPriority(t *testing.T) {
+	e := []Entry{
+		{
+			Priority:    priority.None,
+			Description: "third entry",
+		},
+		{
+			Priority:    priority.A,
+			Description: "first entry",
+		},
+		{
+			Priority:    priority.F,
+			Description: "second entry",
+		},
+	}
+
+	expected := []priority.Priority{
+		priority.A,
+		priority.F,
+		priority.None,
+	}
+	sort.Sort(ByPriority(e))
+	for idx, prio := range expected {
+		actual := e[idx].Priority
+		if actual != prio {
+			t.Errorf("expected %s, got %s\n", prio, actual)
+		}
+	}
+
 }

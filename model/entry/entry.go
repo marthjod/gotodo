@@ -26,6 +26,13 @@ type Entry struct {
 	Done        bool              `json:"done"`
 }
 
+// ByPriority implements sort.Interface for []Entry based on the Priority field.
+type ByPriority []Entry
+
+func (a ByPriority) Len() int           { return len(a) }
+func (a ByPriority) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByPriority) Less(i, j int) bool { return a[i].Priority < a[j].Priority }
+
 // Read converts a string into an Entry
 func Read(line string) Entry {
 	var (
