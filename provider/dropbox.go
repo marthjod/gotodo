@@ -66,15 +66,18 @@ func (d *Dropbox) SetToken(accessToken string) {
 
 // Download returns the content found at path.
 func (d *Dropbox) Download(path string) ([]byte, error) {
-	var content = []byte{}
-
 	req, err := http.NewRequest("POST", "https://content.dropboxapi.com/2/files/download", nil)
 	if err != nil {
-		return content, err
+		return []byte{}, err
 	}
 
-	req.Header.Add("Dropbox-API-Arg", fmt.Sprintf(`{"path": "%s"}`, path))
+	return d.download(path, req)
+}
 
+func (d *Dropbox) download(path string, req *http.Request) ([]byte, error) {
+	var content = []byte{}
+
+	req.Header.Add("Dropbox-API-Arg", fmt.Sprintf(`{"path": "%s"}`, path))
 	res, err := d.Client.Do(req)
 
 	if err != nil {
