@@ -8,6 +8,7 @@ import (
 	"github.com/marthjod/gotodo/model/context"
 	"github.com/marthjod/gotodo/model/priority"
 	"github.com/marthjod/gotodo/model/project"
+	color "github.com/wsxiaoys/terminal/color"
 )
 
 var (
@@ -82,6 +83,38 @@ func (e *Entry) String() string {
 
 	if e.Priority != priority.None {
 		concat = append(concat, fmt.Sprintf("(%s)", e.Priority))
+	}
+
+	concat = append(concat, e.Description)
+
+	for _, p := range e.Projects {
+		concat = append(concat, fmt.Sprintf("+%s", p))
+	}
+
+	for _, c := range e.Contexts {
+		concat = append(concat, fmt.Sprintf("@%s", c))
+	}
+
+	return strings.Join(concat, " ")
+}
+
+// ColorString returns colorized string representation of Entry.
+func (e *Entry) ColorString() string {
+	var concat = []string{}
+
+	if e.Done {
+		concat = append(concat, "x")
+	}
+
+	if e.Priority != priority.None {
+		switch e.Priority {
+		case priority.A:
+			concat = append(concat, color.Sprintf("@{r}(%s)", e.Priority))
+		case priority.B:
+			concat = append(concat, color.Sprintf("@{y}(%s)", e.Priority))
+		default:
+			concat = append(concat, fmt.Sprintf("(%s)", e.Priority))
+		}
 	}
 
 	concat = append(concat, e.Description)
