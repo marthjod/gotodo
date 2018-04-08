@@ -8,7 +8,6 @@ const MatchRegexp = `\([A-Z]\)`
 
 //go:generate stringer -type=Priority
 const (
-	None Priority = iota
 	A    Priority = iota
 	B    Priority = iota
 	C    Priority = iota
@@ -35,6 +34,7 @@ const (
 	X    Priority = iota
 	Y    Priority = iota
 	Z    Priority = iota
+	None Priority = iota
 )
 
 var priorities = map[string]Priority{
