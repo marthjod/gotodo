@@ -2,6 +2,7 @@ package todotxt
 
 import (
 	"bufio"
+	"encoding/json"
 	"io"
 	"strings"
 
@@ -31,7 +32,7 @@ func Read(r io.Reader) *TodoTxt {
 	return t
 }
 
-// String writes out TodoTxt in todo.txt format
+// String renders TodoTxt in todo.txt format
 func (t *TodoTxt) String() string {
 	var concat = []string{}
 	for _, e := range t.Entries {
@@ -39,4 +40,14 @@ func (t *TodoTxt) String() string {
 	}
 
 	return strings.Join(concat, "\n")
+}
+
+// JSON renders TodoTxt in JSON format
+func (t *TodoTxt) JSON() []byte {
+	js, err := json.MarshalIndent(t.Entries, "", "  ")
+	if err != nil {
+		return []byte(`{"error": "` + err.Error() + `"}`)
+	}
+
+	return js
 }

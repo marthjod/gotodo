@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox"
@@ -17,6 +18,7 @@ type Dropbox struct {
 	Provider
 	OAuth2Conf *oauth2.Config
 	Client     *http.Client
+	Token      *oauth2.Token
 }
 
 // NewDropbox returns configured Dropbox
@@ -40,7 +42,7 @@ func (d *Dropbox) Authorize() error {
 
 	url := d.OAuth2Conf.AuthCodeURL(antiCSRFState)
 
-	fmt.Printf("Visit %s for auth dialog, then paste code here: \n", url)
+	log.Printf("visit %s for auth dialog, then paste code here: \n", url)
 	if _, err := fmt.Scan(&code); err != nil {
 		return err
 	}
@@ -50,12 +52,13 @@ func (d *Dropbox) Authorize() error {
 		return err
 	}
 
+	d.Token = tok
 	d.Client = d.OAuth2Conf.Client(context.Background(), tok)
 	return nil
 }
 
-// SetToken configures Dropbox.Client to use the provided access token for subsequent requests
-func (d *Dropbox) SetToken(accessToken string) {
+// SetAccessToken configures Dropbox.Client to use the provided access token for subsequent requests.
+func (d *Dropbox) SetAccessToken(accessToken string) {
 	tok := &oauth2.Token{
 		AccessToken: accessToken,
 		TokenType:   "Bearer",
@@ -85,4 +88,15 @@ func (d *Dropbox) download(path string, req *http.Request) ([]byte, error) {
 	}
 
 	return ioutil.ReadAll(res.Body)
+}
+
+// ReadAccessToken reads access token from file to avoid authorization steps.
+func (d *Dropbox) ReadAccessToken(path string) (string, error) {
+	b, err := ioutil.ReadFile(path)
+	return string(b), err
+}
+
+// WriteAccessToken writes the access token to a file for future requests.
+func (d *Dropbox) WriteAccessToken(path string) error {
+	return ioutil.WriteFile(path, []byte(d.Token.AccessToken), 0600)
 }
