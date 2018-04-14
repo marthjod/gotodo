@@ -6,12 +6,20 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/dropbox/dropbox-sdk-go-unofficial/dropbox"
 	"golang.org/x/oauth2"
+
+	"github.com/marthjod/gotodo/model/todotxt"
 )
 
-const antiCSRFState = "no-csrf"
+const (
+	antiCSRFState   = "no-csrf"
+	contentAPIURL   = "https://content.dropboxapi.com/2/files"
+	fileDownloadURL = contentAPIURL + "/download"
+	fileUploadURL   = contentAPIURL + "/upload"
+)
 
 // Dropbox represents a Dropbox API client
 type Dropbox struct {
@@ -69,7 +77,7 @@ func (d *Dropbox) SetAccessToken(accessToken string) {
 
 // Download returns the content found at path.
 func (d *Dropbox) Download(path string) ([]byte, error) {
-	req, err := http.NewRequest("POST", "https://content.dropboxapi.com/2/files/download", nil)
+	req, err := http.NewRequest(http.MethodPost, fileDownloadURL, nil)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -81,6 +89,34 @@ func (d *Dropbox) download(path string, req *http.Request) ([]byte, error) {
 	var content = []byte{}
 
 	req.Header.Add("Dropbox-API-Arg", fmt.Sprintf(`{"path": "%s"}`, path))
+	res, err := d.Client.Do(req)
+
+	if err != nil {
+		return content, err
+	}
+
+	return ioutil.ReadAll(res.Body)
+}
+
+// Upload uploads a file to remote path.
+func (d *Dropbox) Upload(path string, autoRename bool, t *todotxt.TodoTxt) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodPost, fileUploadURL, strings.NewReader(t.String()))
+	if err != nil {
+		return []byte{}, err
+	}
+
+	return d.upload(path, "add", autoRename, false, req)
+}
+
+func (d *Dropbox) upload(path, mode string, autoRename, mute bool, req *http.Request) ([]byte, error) {
+	var (
+		content = []byte{}
+		params  = fmt.Sprintf(`{"path": "%s","mode": "%s","autorename": %t,"mute": %t}`,
+			path, mode, autoRename, mute)
+	)
+
+	req.Header.Add("Dropbox-API-Arg", params)
+	req.Header.Add("Content-Type", "application/octet-stream")
 	res, err := d.Client.Do(req)
 
 	if err != nil {

@@ -23,6 +23,7 @@ func main() {
 		accessTokenFile = flag.String("access-token", ".access-token", "File containing re-usable access token")
 		remoteFile      = "/todo.txt"
 		localCopy       = "todo.txt"
+		autoRename      = true // TODO
 	)
 
 	flag.Parse()
@@ -72,7 +73,12 @@ func main() {
 	log.Printf("written local copy %s\n", localCopy)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		daemon.MethodHandler(w, r, todoTxt)
+		switch r.Method {
+		case http.MethodGet:
+			daemon.FormatHandler(w, r, todoTxt)
+		case http.MethodPost:
+			daemon.UploadHandler(w, r, todoTxt, dropbox, remoteFile, autoRename)
+		}
 	})
 
 	log.Printf("serving on port %d\n", *port)

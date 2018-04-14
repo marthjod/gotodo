@@ -5,18 +5,11 @@ import (
 
 	"github.com/marthjod/gotodo/cli"
 	"github.com/marthjod/gotodo/model/todotxt"
+	"github.com/marthjod/gotodo/provider"
 )
 
-// MethodHandler routes bases on HTTP method.
-func MethodHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt) {
-	switch r.Method {
-	case "GET":
-		GETHandler(w, r, t)
-	}
-}
-
-// GETHandler routes GET requests based on requested format.
-func GETHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt) {
+// FormatHandler routes GET requests based on requested format.
+func FormatHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt) {
 	switch r.Header.Get("Accept") {
 	case "application/json":
 		JSONHandler(w, r, t)
@@ -35,4 +28,15 @@ func JSONHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt) {
 func CLIHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(cli.Prefixed(t)))
+}
+
+// UploadHandler uploads TodoTxt to provider/backend.
+func UploadHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt, provider provider.Provider, remoteFile string, autoRename bool) {
+	resp, err := provider.Upload(remoteFile, autoRename, t)
+	if err != nil {
+		w.WriteHeader(http.StatusConflict)
+		w.Write([]byte(err.Error()))
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(resp))
 }
