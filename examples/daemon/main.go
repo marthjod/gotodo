@@ -29,19 +29,20 @@ func CLIHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt) {
 func main() {
 
 	var (
-		port       = flag.Int("port", 4242, "Local port to listen on")
-		dropbox    *provider.Dropbox
-		appKey     = os.Getenv("APP_KEY")
-		appSecret  = os.Getenv("APP_SECRET")
-		remoteFile = "/todo.txt"
-		localCopy  = "todo.txt"
+		port            = flag.Int("port", 4242, "Local port to listen on")
+		dropbox         *provider.Dropbox
+		appKey          = os.Getenv("APP_KEY")
+		appSecret       = os.Getenv("APP_SECRET")
+		accessTokenFile = flag.String("access-token", ".access-token", "File containing re-usable access token")
+		remoteFile      = "/todo.txt"
+		localCopy       = "todo.txt"
 	)
 
 	flag.Parse()
 
 	dropbox = provider.NewDropbox(appKey, appSecret)
 
-	accessToken, err := dropbox.ReadAccessToken(".access-token")
+	accessToken, err := dropbox.ReadAccessToken(*accessTokenFile)
 	if err != nil {
 		log.Println(err)
 	}
@@ -50,7 +51,7 @@ func main() {
 		log.Println("(re-)using access token")
 		dropbox.SetAccessToken(accessToken)
 	} else {
-		log.Println("environment variable ACCESS_TOKEN empty, authorizing against API first")
+		log.Printf("unable to find access token file %s locally, authorizing against API first", *accessTokenFile)
 
 		if appKey == "" || appSecret == "" {
 			log.Fatalln("APP_KEY or APP_SECRET not set")
@@ -63,7 +64,7 @@ func main() {
 			log.Fatalln(err)
 		}
 
-		err = dropbox.WriteAccessToken(".access-token")
+		err = dropbox.WriteAccessToken(*accessTokenFile)
 		if err != nil {
 			log.Println(err)
 		}
