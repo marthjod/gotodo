@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -65,13 +64,11 @@ func main() {
 	log.Printf("downloaded %s\n", remoteFile)
 
 	todoTxt := todotxt.Read(bytes.NewReader(todoFile))
-	o, err := os.Create(localCopy)
+
+	err = todoTxt.Write(localCopy)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer o.Close()
-
-	o.WriteString(fmt.Sprintln(todoTxt))
 	log.Printf("written local copy %s\n", localCopy)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

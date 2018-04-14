@@ -3,7 +3,10 @@ package todotxt
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
+	"log"
+	"os"
 	"strings"
 
 	"github.com/marthjod/gotodo/model/entry"
@@ -14,7 +17,7 @@ type TodoTxt struct {
 	Entries []entry.Entry
 }
 
-// Read ...
+// Read reads from Reader and maps to TodoTxt struct.
 func Read(r io.Reader) *TodoTxt {
 	var t = &TodoTxt{}
 
@@ -30,6 +33,22 @@ func Read(r io.Reader) *TodoTxt {
 	}
 
 	return t
+}
+
+// Write writes TodoTxt to file.
+func (t *TodoTxt) Write(path string) error {
+	o, err := os.Create(path)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer o.Close()
+
+	return t.write(o)
+}
+
+func (t *TodoTxt) write(w io.Writer) error {
+	_, err := io.WriteString(w, fmt.Sprintln(t))
+	return err
 }
 
 // String renders TodoTxt in todo.txt format
