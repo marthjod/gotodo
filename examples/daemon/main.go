@@ -9,22 +9,10 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/marthjod/gotodo/cli"
+	"github.com/marthjod/gotodo/daemon"
 	"github.com/marthjod/gotodo/model/todotxt"
 	"github.com/marthjod/gotodo/provider"
 )
-
-// JSONHandler writes TodoTxt as JSON
-func JSONHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt) {
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(t.JSON())
-}
-
-// CLIHandler writes TodoTxt as string intended for CLI
-func CLIHandler(w http.ResponseWriter, r *http.Request, t *todotxt.TodoTxt) {
-	w.Header().Set("Content-Type", "text/plain")
-	w.Write([]byte(cli.Prefixed(t)))
-}
 
 func main() {
 
@@ -87,11 +75,7 @@ func main() {
 	log.Printf("written local copy %s\n", localCopy)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Accept") == "application/json" {
-			JSONHandler(w, r, todoTxt)
-			return
-		}
-		CLIHandler(w, r, todoTxt)
+		daemon.MethodHandler(w, r, todoTxt)
 	})
 
 	log.Printf("serving on port %d\n", *port)
